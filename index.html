@@ -3,772 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Simulador Clínico TAVI Pro - Interactivo</title>
-    <style>
-        :root {
-            --primary: #1e3a8a;
-            --secondary: #3b82f6;
-            --accent: #10b981;
-            --bg: #f8fafc;
-            --card-bg: #ffffff;
-            --text: #1e293b;
-            --border: #cbd5e1;
-        }
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: var(--bg);
-            color: var(--text);
-            margin: 0;
-            padding: 20px;
-            line-height: 1.4;
-        }
-        .app-container {
-            max-width: 1200px;
-            margin: 0 auto;
-            background: var(--card-bg);
-            border-radius: 12px;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.08);
-            overflow: hidden;
-        }
-        header {
-            background: linear-gradient(135deg, var(--primary), var(--secondary));
-            color: white;
-            padding: 25px;
-            text-align: center;
-        }
-        header h1 { margin: 0; font-size: 26px; }
-        header p { margin: 5px 0 0 0; opacity: 0.9; font-size: 14px; }
-        
-        .main-grid {
-            display: grid;
-            grid-template-columns: 380px 1fr;
-            gap: 0;
-        }
-        @media (max-width: 900px) {
-            .main-grid { grid-template-columns: 1fr; }
-        }
-        
-        .sidebar-inputs {
-            background: #f1f5f9;
-            padding: 20px;
-            border-right: 1px solid var(--border);
-        }
-        .sidebar-inputs h3 { color: var(--primary); margin-top: 0; font-size: 18px; border-bottom: 2px solid var(--secondary); padding-bottom: 8px; }
-        
-        .form-group {
-            margin-bottom: 14px;
-        }
-        label {
-            display: block;
-            font-weight: 600;
-            font-size: 13px;
-            margin-bottom: 5px;
-            color: #334155;
-        }
-        input, select {
-            width: 100%;
-            padding: 8px 10px;
-            border: 1px solid var(--border);
-            border-radius: 6px;
-            font-size: 14px;
-            box-sizing: border-box;
-            background: white;
-        }
-        input:focus, select:focus {
-            border-color: var(--secondary);
-            outline: none;
-            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
-        }
-        
-        .btn-run {
-            background: var(--accent);
-            color: white;
-            border: none;
-            width: 100%;
-            padding: 12px;
-            font-size: 15px;
-            font-weight: bold;
-            border-radius: 6px;
-            cursor: pointer;
-            transition: background 0.2s;
-            margin-top: 10px;
-        }
-        .btn-run:hover { background: #059669; }
-
-        .content-display {
-            padding: 25px;
-        }
-        
-        .metrics-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 15px;
-            margin-bottom: 25px;
-        }
-        .metric-card {
-            background: #f8fafc;
-            border: 1px solid var(--border);
-            border-radius: 8px;
-            padding: 15px;
-            text-align: center;
-        }
-        .metric-card h4 { margin: 0 0 5px 0; font-size: 12px; color: #64748b; text-transform: uppercase; }
-        .metric-card .value { font-size: 20px; font-weight: bold; color: var(--primary); }
-
-        h3.section-title { color: var(--primary); font-size: 18px; margin-top: 0; border-bottom: 1px solid var(--border); padding-bottom: 8px; }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 10px;
-            font-size: 14px;
-        }
-        th, td {
-            border: 1px solid var(--border);
-            padding: 10px;
-            text-align: left;
-        }
-        th {
-            background: var(--primary);
-            color: white;
-        }
-        tr:nth-child(even) { background: #f8fafc; }
-        
-        .badge {
-            padding: 4px 8px;
-            border-radius: 12px;
-            font-size: 11px;
-            font-weight: bold;
-            color: white;
-            display: inline-block;
-        }
-        .badge-auto { background: #2563eb; }
-        .badge-balloon { background: #16a34a; }
-
-        .alert-box {
-            background: #eff6ff;
-            border-left: 4px solid var(--secondary);
-            padding: 12px;
-            border-radius: 0 6px 6px 0;
-            margin-top: 20px;
-            font-size: 13px;
-        }
-    </style>
-</head>
-<body>
-
-<div class="app-container">
-    <header>
-        <h1>Simulador Clínico TAVI Pro 3D</h1>
-        <p>Herramienta interactiva para planificación intervencionista basada en biometría 3Mensio</p>
-    </header>
-
-    <div class="main-grid">
-        <!-- Panel de Entradas (Inputs Interactivos) -->
-        <div class="sidebar-inputs">
-            <h3>Parámetros 3Mensio</h3>
-            
-            <div class="form-group">
-                <label>Área del Anillo (mm²):</label>
-                <input type="number" id="in_area" value="418.9" step="0.1">
-            </div>
-
-            <div class="form-group">
-                <label>Perímetro del Anillo (mm):</label>
-                <input type="number" id="in_peri" value="73.2" step="0.1">
-            </div>
-
-            <div class="form-group">
-                <label>Diámetro Mínimo / Máximo (mm):</label>
-                <div style="display: flex; gap: 8px;">
-                    <input type="number" id="in_mindiam" value="21.4" step="0.1">
-                    <input type="number" id="in_maxdiam" value="25.7" step="0.1">
-                </div>
-            </div>
-
-            <div class="form-group">
-                <label>Carga de Calcio Valvular:</label>
-                <select id="in_calc">
-                    <option value="Severo" selected>Severo (>1500 mm³)</option>
-                    <option value="Moderado">Moderado</option>
-                    <option value="Leve">Leve</option>
-                </select>
-            </div>
-
-            <div class="form-group">
-                <label>Altura Coronaria Mínima (mm):</label>
-                <input type="number" id="in_coronary" value="12.5" step="0.1">
-            </div>
-
-            <div class="form-group">
-                <label>Diámetro Mínimo Femoral/Ilíaco (mm):</label>
-                <input type="number" id="in_access" value="5.6" step="0.1">
-            </div>
-
-            <button class="btn-run" onclick="actualizarSimulacion()">Simular e Instanciar Válvulas</button>
-        </div>
-
-        <!-- Panel de Resultados y Visualización -->
-        <div class="content-display">
-            <h3 class="section-title">Análisis Biométrico y Riesgos Derivados</h3>
-            
-            <div class="metrics-grid">
-                <div class="metric-card">
-                    <h4>Excentricidad</h4>
-                    <div class="value" id="out_excent">0.17</div>
-                </div>
-                <div class="metric-card">
-                    <h4>Predilatación</h4>
-                    <div class="value" id="out_predil" style="color: #dc2626;">Obligatoria (Sí)</div>
-                </div>
-                <div class="metric-card">
-                    <h4>Riesgo Marcapasos</h4>
-                    <div class="value" id="out_pacemaker" style="color: #d97706;">Moderado - Alto</div>
-                </div>
-                <div class="metric-card">
-                    <h4>Riesgo Coronario</h4>
-                    <div class="value" id="out_coronary_risk" style="color: #16a34a;">Bajo</div>
-                </div>
-            </div>
-
-            <h3 class="section-title">Matriz de Selección de Prótesis (Mercado Global)</h3>
-            <table>
-                <thead>
-                    <tr>
-                        <th>Tecnología / Prótesis</th>
-                        <th>Tipo</th>
-                        <th>Tamaño Sugerido</th>
-                        <th>Oversizing Est.</th>
-                        <th>Observaciones Técnicas</th>
-                    </tr>
-                </thead>
-                <tbody id="tabla_resultados">
-                    <!-- Rellenado dinámicamente por JS -->
-                </tbody>
-            </table>
-
-            <div class="alert-box" id="alert_text">
-                <strong>Nota de Acceso Vascular:</strong> El diámetro de acceso mínimo evaluado (< 6.0 mm) con calcificación severa iliofemoral requiere extrema precaución, uso de sistemas de bajo perfil o predilatación vascular (IVL).
-            </div>
-        </div>
-    </div>
-</div>
-
-<script>
-function actualizarSimulacion() {
-    const area = parseFloat(document.getElementById('in_area').value);
-    const peri = parseFloat(document.getElementById('in_peri').value);
-    const minD = parseFloat(document.getElementById('in_mindiam').value);
-    const maxD = parseFloat(document.getElementById('in_maxdiam').value);
-    const calc = document.getElementById('in_calc').value;
-    const coro = parseFloat(document.getElementById('in_coronary').value);
-    const acc = parseFloat(document.getElementById('in_access').value);
-
-    // Cálculos dinámicos simples para excentricidad
-    const excent = ((maxD - minD) / maxD).toFixed(2);
-    document.getElementById('out_excent').innerText = excent;
-
-    // Lógica dinámica de dimensionamiento basada en perímetro y área
-    let evolutSize = peri > 78 ? "34 mm" : (peri > 73 ? "29 mm" : "26 mm");
-    let sapienSize = area > 430 ? "29 mm" : "26 mm";
-    let navitorSize = peri > 76 ? "31 mm" : (peri > 72 ? "27 mm" : "25 mm");
-    let hydraSize = peri > 75 ? "30 mm" : "26 mm";
-    let myvalSize = peri > 74 ? "29 mm" : (peri > 71 ? "27.5 mm (Intermedio)" : "26 mm");
-
-    let htmlRows = `
-        <tr>
-            <td><strong>Medtronic Evolut (PRO+/FX)</strong></td>
-            <td><span class="badge badge-auto">Autoexpandible</span></td>
-            <td><strong>${evolutSize}</strong></td>
-            <td>~18% en perímetro</td>
-            <td>Diseño supra-anular. Excelente área efectiva.</td>
-        </tr>
-        <tr>
-            <td><strong>Edwards SAPIEN 3 / Ultra</strong></td>
-            <td><span class="badge badge-balloon">Balón-expandible</span></td>
-            <td><strong>${sapienSize}</strong></td>
-            <td>~14% en área</td>
-            <td>Ajuste exacto. Vigilar perfil de introductores 14Fr-16Fr.</td>
-        </tr>
-        <tr>
-            <td><strong>Boston Scientific Navitor</strong></td>
-            <td><span class="badge badge-auto">Autoexpandible</span></td>
-            <td><strong>${navitorSize}</strong></td>
-            <td>~15% en perímetro</td>
-            <td>Faldón activo contra fugas paravalvulares.</td>
-        </tr>
-        <tr>
-            <td><strong>Hydra (SMT)</strong></td>
-            <td><span class="badge badge-auto">Autoexpandible</span></td>
-            <td><strong>${hydraSize}</strong></td>
-            <td>~22% en perímetro</td>
-            <td>Perfil bajo con celdas adaptativas de tres zonas.</td>
-        </tr>
-        <tr>
-            <td><strong>Myval (Meril Life Sciences)</strong></td>
-            <td><span class="badge badge-balloon">Balón-expandible</span></td>
-            <td><strong>${myvalSize}</strong></td>
-            <td>~16% en área</td>
-            <td>Ventaja de tallaje intermedio para control de expansión.</td>
-        </tr>
-    `;
-
-    document.getElementById('tabla_resultados').innerHTML = htmlRows;
-    
-    // Alerta interactiva de acceso
-    if(acc < 6.0) {
-        document.getElementById('alert_text').innerHTML = `<strong>⚠️ Alerta de Acceso Vascular:</strong> Con un diámetro de ${acc} mm y calcificación iliofemoral, existe alto riesgo vascular. Considere litotricia intravascular (IVL) o vía alternativa.`;
-    } else {
-        document.getElementById('alert_text').innerHTML = `<strong>✅ Acceso Favorable:</strong> Diámetro luminal adecuado para el paso de introductores estándar con precaución por placa.`;
-    }
-}
-
-// Ejecutar al cargar la página
-window.onload = actualizarSimulacion;
-</script>
-
-</body>
-</html><!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Simulador Clínico TAVI Pro 3D - Enrique Vargas</title>
-    <style>
-        :root {
-            --primary: #1e3a8a;
-            --secondary: #3b82f6;
-            --accent: #10b981;
-            --danger: #dc2626;
-            --warning: #d97706;
-            --bg: #f8fafc;
-            --card-bg: #ffffff;
-            --text: #1e293b;
-            --border: #cbd5e1;
-        }
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: var(--bg);
-            color: var(--text);
-            margin: 0;
-            padding: 20px;
-            line-height: 1.4;
-        }
-        .app-container {
-            max-width: 1300px;
-            margin: 0 auto;
-            background: var(--card-bg);
-            border-radius: 12px;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.08);
-            overflow: hidden;
-        }
-        header {
-            background: linear-gradient(135deg, var(--primary), var(--secondary));
-            color: white;
-            padding: 25px;
-            text-align: center;
-        }
-        header h1 { margin: 0; font-size: 26px; }
-        header p { margin: 5px 0 0 0; opacity: 0.9; font-size: 14px; }
-        
-        .main-grid {
-            display: grid;
-            grid-template-columns: 400px 1fr;
-            gap: 0;
-        }
-        @media (max-width: 950px) {
-            .main-grid { grid-template-columns: 1fr; }
-        }
-        
-        .sidebar-inputs {
-            background: #f1f5f9;
-            padding: 20px;
-            border-right: 1px solid var(--border);
-            max-height: 90vh;
-            overflow-y: auto;
-        }
-        .sidebar-inputs h3 { color: var(--primary); margin-top: 0; font-size: 18px; border-bottom: 2px solid var(--secondary); padding-bottom: 8px; }
-        
-        .form-group {
-            margin-bottom: 12px;
-        }
-        label {
-            display: block;
-            font-weight: 600;
-            font-size: 12px;
-            margin-bottom: 4px;
-            color: #334155;
-        }
-        input, select {
-            width: 100%;
-            padding: 7px 10px;
-            border: 1px solid var(--border);
-            border-radius: 6px;
-            font-size: 13px;
-            box-sizing: border-box;
-            background: white;
-        }
-        input:focus, select:focus {
-            border-color: var(--secondary);
-            outline: none;
-            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
-        }
-        
-        .btn-run {
-            background: var(--accent);
-            color: white;
-            border: none;
-            width: 100%;
-            padding: 12px;
-            font-size: 15px;
-            font-weight: bold;
-            border-radius: 6px;
-            cursor: pointer;
-            transition: background 0.2s;
-            margin-top: 15px;
-        }
-        .btn-run:hover { background: #059669; }
-
-        .content-display {
-            padding: 25px;
-            max-height: 90vh;
-            overflow-y: auto;
-        }
-        
-        .metrics-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-            gap: 12px;
-            margin-bottom: 20px;
-        }
-        .metric-card {
-            background: #f8fafc;
-            border: 1px solid var(--border);
-            border-radius: 8px;
-            padding: 12px;
-            text-align: center;
-        }
-        .metric-card h4 { margin: 0 0 5px 0; font-size: 11px; color: #64748b; text-transform: uppercase; }
-        .metric-card .value { font-size: 18px; font-weight: bold; }
-
-        h3.section-title { color: var(--primary); font-size: 16px; margin-top: 20px; border-bottom: 1px solid var(--border); padding-bottom: 6px; }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 10px;
-            font-size: 13px;
-        }
-        th, td {
-            border: 1px solid var(--border);
-            padding: 8px;
-            text-align: left;
-        }
-        th {
-            background: var(--primary);
-            color: white;
-        }
-        tr:nth-child(even) { background: #f8fafc; }
-        
-        .badge {
-            padding: 3px 8px;
-            border-radius: 12px;
-            font-size: 11px;
-            font-weight: bold;
-            color: white;
-            display: inline-block;
-        }
-        .badge-auto { background: #2563eb; }
-        .badge-balloon { background: #16a34a; }
-
-        /* Estilos para el Visor / Simulador 3D Simulado */
-        .sim-3d-container {
-            background: #0f172a;
-            border-radius: 8px;
-            padding: 20px;
-            color: white;
-            text-align: center;
-            margin-top: 15px;
-            position: relative;
-            overflow: hidden;
-        }
-        .sim-canvas-box {
-            height: 180px;
-            border: 2px dashed #334155;
-            border-radius: 6px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            margin-top: 10px;
-            background: radial-gradient(circle, #1e293b 0%, #0f172a 100%);
-        }
-        .valve-graphic {
-            font-size: 24px;
-            font-weight: bold;
-            letter-spacing: 2px;
-            color: #38bdf8;
-            margin: 10px 0;
-            transition: all 0.3s ease;
-        }
-        .alert-box {
-            background: #eff6ff;
-            border-left: 4px solid var(--secondary);
-            padding: 12px;
-            border-radius: 0 6px 6px 0;
-            margin-top: 15px;
-            font-size: 13px;
-        }
-    </style>
-</head>
-<body>
-
-<div class="app-container">
-    <header>
-        <h1>Simulador Clínico TAVI Pro 3D (Caso: Enrique Vargas)</h1>
-        <p>Planificación Avanzada con Cuantificación de Riesgos y Simulación de Despliegue Bilateral</p>
-    </header>
-
-    <div class="main-grid">
-        <!-- Panel de Entradas (3Mensio Inputs) -->
-        <div class="sidebar-inputs">
-            <h3>Biometría 3Mensio</h3>
-            
-            <div class="form-group">
-                <label>Área del Anillo (mm²):</label>
-                <input type="number" id="in_area" value="418.9" step="0.1">
-            </div>
-
-            <div class="form-group">
-                <label>Perímetro del Anillo (mm):</label>
-                <input type="number" id="in_peri" value="73.2" step="0.1">
-            </div>
-
-            <div class="form-group">
-                <label>Diámetro Mín / Máx Anillo (mm):</label>
-                <div style="display: flex; gap: 6px;">
-                    <input type="number" id="in_mindiam" value="21.4" step="0.1">
-                    <input type="number" id="in_maxdiam" value="25.7" step="0.1">
-                </div>
-            </div>
-
-            <div class="form-group">
-                <label>Calcio Valvular Total (mm³):</label>
-                <input type="number" id="in_calc" value="1718" step="1">
-            </div>
-
-            <div class="form-group">
-                <label>Alturas Coronarias (RCA / LCA) (mm):</label>
-                <div style="display: flex; gap: 6px;">
-                    <input type="number" id="in_rca" value="15.4" step="0.1">
-                    <input type="number" id="in_lca" value="12.5" step="0.1">
-                </div>
-            </div>
-
-            <h3 style="margin-top: 20px;">Accesos Femorales Bilaterales</h3>
-            <div class="form-group">
-                <label>Acceso Derecho - Diám. Mínimo (mm):</label>
-                <input type="number" id="in_acc_der" value="4.9" step="0.1">
-            </div>
-            <div class="form-group">
-                <label>Acceso Izquierdo - Diám. Mínimo (mm):</label>
-                <input type="number" id="in_acc_izq" value="5.6" step="0.1">
-            </div>
-
-            <div class="form-group" style="margin-top: 15px;">
-                <label>Seleccionar Prótesis para Simulación 3D:</label>
-                <select id="sel_valvula" onchange="actualizarSimulacion()">
-                    <option value="Evolut 29">Medtronic Evolut PRO+ 29 mm (Auto)</option>
-                    <option value="Sapien 26">Edwards SAPIEN 3 Ultra 26 mm (Balón)</option>
-                    <option value="Navitor 27">Boston Scientific Navitor 27 mm (Auto)</option>
-                    <option value="Hydra 30">Hydra SMT 30 mm (Auto)</option>
-                    <option value="Myval 27.5">Meril Myval 27.5 mm Intermedio (Balón)</option>
-                </select>
-            </div>
-
-            <button class="btn-run" onclick="actualizarSimulacion()">Actualizar Simulación y Riesgos</button>
-        </div>
-
-        <!-- Panel de Resultados, Cifras y Simulador 3D -->
-        <div class="content-display">
-            <h3 class="section-title">Cuantificación de Riesgos Quirúrgicos (Cifras del Caso)</h3>
-            
-            <div class="metrics-grid">
-                <div class="metric-card">
-                    <h4>Riesgo Vascular Bilateral</h4>
-                    <div class="value" id="out_risk_vasc" style="color: var(--danger);">Alto (20.5%)</div>
-                </div>
-                <div class="metric-card">
-                    <h4>Riesgo Embolismo (Stroke)</h4>
-                    <div class="value" id="out_risk_stroke" style="color: var(--warning);">Moderado (5.8%)</div>
-                </div>
-                <div class="metric-card">
-                    <h4>Riesgo Marcapasos (BAV)</h4>
-                    <div class="value" id="out_risk_mp" style="color: var(--warning);">Moderado-Alto (25%)</div>
-                </div>
-                <div class="metric-card">
-                    <h4>Riesgo Obs. Coronaria</h4>
-                    <div class="value" id="out_risk_coro" style="color: var(--accent);">Bajo (&lt;4%)</div>
-                </div>
-            </div>
-
-            <h3 class="section-title">Visor de Simulación 3D y Despliegue de Prótesis</h3>
-            <div class="sim-3d-container">
-                <span id="sim_title" style="font-size: 14px; color: #94a3b8; font-weight: bold;">Simulación Activa: Medtronic Evolut PRO+ 29 mm</span>
-                <div class="sim-canvas-box">
-                    <div style="font-size: 11px; color: #cbd5e1;">[ Reconstrucción 3Mensio / Anillo Elíptico 418.9 mm² ]</div>
-                    <div class="valve-graphic" id="sim_graphic">[ ⬡ VÁLVULA DESPLEGADA SUPRA-ANULAR ⬡ ]</div>
-                    <div id="sim_details" style="font-size: 12px; color: #38bdf8;">Oversizing Perímetro: ~18% | Expansión Simétrica Optimizada</div>
-                </div>
-            </div>
-
-            <h3 class="section-title">Matriz de Selección de Prótesis Sugeridas</h3>
-            <table>
-                <thead>
-                    <tr>
-                        <th>Prótesis / Dispositivo</th>
-                        <th>Tipo</th>
-                        <th>Tamaño Recomendado</th>
-                        <th>Sobredimensionamiento</th>
-                        <th>Observación Anatómica</th>
-                    </tr>
-                </thead>
-                <tbody id="tabla_resultados">
-                    <!-- Dinámico -->
-                </tbody>
-            </table>
-
-            <div class="alert-box" id="alert_text">
-                <strong>Evaluación Bilateral:</strong> Analizando accesos...
-            </div>
-        </div>
-    </div>
-</div>
-
-<script>
-function actualizarSimulacion() {
-    const area = parseFloat(document.getElementById('in_area').value) || 0;
-    const peri = parseFloat(document.getElementById('in_peri').value) || 0;
-    const minD = parseFloat(document.getElementById('in_mindiam').value) || 0;
-    const maxD = parseFloat(document.getElementById('in_maxdiam').value) || 0;
-    const calc = parseFloat(document.getElementById('in_calc').value) || 0;
-    const rca = parseFloat(document.getElementById('in_rca').value) || 0;
-    const lca = parseFloat(document.getElementById('in_lca').value) || 0;
-    const accDer = parseFloat(document.getElementById('in_acc_der').value) || 0;
-    const accIzq = parseFloat(document.getElementById('in_acc_izq').value) || 0;
-    const valvSel = document.getElementById('sel_valvula').value;
-
-    // Cálculo de riesgos cuantitativos basados en las métricas reales
-    let riesgoVasc = "Bajo (<5%)";
-    let colorVasc = "#16a34a";
-    if (accDer < 5.5 || accIzq < 5.5) {
-        riesgoVasc = "Alto (19.8%)";
-        colorVasc = "#dc2626";
-    } else if (accDer < 6.0 || accIzq < 6.0) {
-        riesgoVasc = "Moderado (12.4%)";
-        colorVasc = "#d97706";
-    }
-    document.getElementById('out_risk_vasc').innerText = riesgoVasc;
-    document.getElementById('out_risk_vasc').style.color = colorVasc;
-
-    let riesgoStroke = calc > 1500 ? "Moderado-Alto (6.2%)" : "Bajo (3.5%)";
-    document.getElementById('out_risk_stroke').innerText = riesgoStroke;
-
-    let riesgoCoro = (rca < 10 || lca < 10) ? "Alto (>25%)" : "Bajo (<4%)";
-    let colorCoro = (rca < 10 || lca < 10) ? "#dc2626" : "#16a34a";
-    document.getElementById('out_risk_coro').innerText = riesgoCoro;
-    document.getElementById('out_risk_coro').style.color = colorCoro;
-
-    // Actualizar Visor 3D simulado según la válvula elegida
-    document.getElementById('sim_title').innerText = "Simulación Activa: " + valvSel;
-    let graphicEl = document.getElementById('sim_graphic');
-    let detailsEl = document.getElementById('sim_details');
-
-    if(valvSel.includes("Evolut")) {
-        graphicEl.innerText = "[ ⬡ EVOLUT 29mm - SUPRA-ANULAR ⬡ ]";
-        detailsEl.innerText = "Oversizing Perímetro: ~18% | Anclaje alto con marco de nitinol expandido.";
-    } else if(valvSel.includes("Sapien")) {
-        graphicEl.innerText = "[ ⏺ SAPIEN 3 26mm - BALÓN EXPANDIBLE ⏺ ]";
-        detailsEl.innerText = "Oversizing Área: ~14% | Despliegue con balón de alta presión en anillo.";
-    } else if(valvSel.includes("Navitor")) {
-        graphicEl.innerText = "[ ⬡ NAVITOR 27mm - FALDÓN ACTIVO ⬡ ]";
-        detailsEl.innerText = "Oversizing Perímetro: ~15% | Excelente control de fuga paravalvular.";
-    } else if(valvSel.includes("Hydra")) {
-        graphicEl.innerText = "[ ⬡ HYDRA 30mm - PERFIL BAJO ⬡ ]";
-        detailsEl.innerText = "Oversizing Perímetro: ~22% | Celdas adaptativas de tres zonas.";
-    } else if(valvSel.includes("Myval")) {
-        graphicEl.innerText = "[ ⏺ MYVAL 27.5mm - TALLA INTERMEDIA ⏺ ]";
-        detailsEl.innerText = "Oversizing Área: ~16% | Relación perfecta sin salto de medida.";
-    }
-
-    // Dimensionamiento automático en la tabla
-    let evolutSize = peri > 78 ? "34 mm" : (peri > 73 ? "29 mm" : "26 mm");
-    let sapienSize = area > 430 ? "29 mm" : "26 mm";
-    let navitorSize = peri > 76 ? "31 mm" : (peri > 72 ? "27 mm" : "25 mm");
-    let hydraSize = peri > 75 ? "30 mm" : "26 mm";
-    let myvalSize = peri > 74 ? "29 mm" : (peri > 71 ? "27.5 mm (Intermedio)" : "26 mm");
-
-    document.getElementById('tabla_resultados').innerHTML = `
-        <tr>
-            <td><strong>Medtronic Evolut (PRO+/FX)</strong></td>
-            <td><span class="badge badge-auto">Autoexpandible</span></td>
-            <td><strong>${evolutSize}</strong></td>
-            <td>~18% en perímetro</td>
-            <td>Diseño supra-anular. Ideal para área 418.9 mm².</td>
-        </tr>
-        <tr>
-            <td><strong>Edwards SAPIEN 3 / Ultra</strong></td>
-            <td><span class="badge badge-balloon">Balón-expandible</span></td>
-            <td><strong>${sapienSize}</strong></td>
-            <td>~14% en área</td>
-            <td>Ajuste exacto al dintel superior del anillo.</td>
-        </tr>
-        <tr>
-            <td><strong>Boston Scientific Navitor</strong></td>
-            <td><span class="badge badge-auto">Autoexpandible</span></td>
-            <td><strong>${navitorSize}</strong></td>
-            <td>~15% en perímetro</td>
-            <td>Faldón activo antimalignidad paravalvular.</td>
-        </tr>
-        <tr>
-            <td><strong>Hydra (SMT)</strong></td>
-            <td><span class="badge badge-auto">Autoexpandible</span></td>
-            <td><strong>${hydraSize}</strong></td>
-            <td>~22% en perímetro</td>
-            <td>Celdas abiertas con adaptabilidad excelente.</td>
-        </tr>
-        <tr>
-            <td><strong>Myval (Meril Life Sciences)</strong></td>
-            <td><span class="badge badge-balloon">Balón-expandible</span></td>
-            <td><strong>${myvalSize}</strong></td>
-            <td>~16% en área</td>
-            <td>Evita sub/sobre-dimensionamiento por salto de tallas.</td>
-        </tr>
-    `;
-
-    // Alerta de accesos bilaterales
-    let alertBox = document.getElementById('alert_text');
-    let minAcceso = Math.min(accDer, accIzq);
-    if(minAcceso < 5.5) {
-        alertBox.innerHTML = `<strong>⚠️ Alerta Crítica Vascular Bilateral:</strong> Se detectó un lumen mínimo de ${minAcceso} mm (Derecho: ${accDer} mm, Izquierdo: ${accIzq} mm) con calcificación severa. <strong>Requiere uso obligatorio de Litotricia Intravascular (IVL / Shockwave)</strong> o considerar acceso alternativo (subclavio/transcarotideo).`;
-        alertBox.style.borderLeftColor = "#dc2626";
-    } else {
-        alertBox.innerHTML = `<strong>✅ Evaluación de Accesos Bilaterales:</strong> Diámetros mínimos aceptables (Der: ${accDer} mm, Izq: ${accIzq} mm). Se recomienda planificación con introductores de bajo perfil y predilatación vascular.`;
-        alertBox.style.borderLeftColor = "#10b981";
-    }
-}
-
-window.onload = actualizarSimulacion;
-</script>
-
-</body>
-</html>
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Simulador de Despliegue TAVI 3D - Caso Enrique Vargas</title>
+    <title>Simulador Interactivo TAVI Pro - Enrique Vargas</title>
     <style>
         :root {
             --primary: #0f172a;
@@ -787,7 +22,7 @@ window.onload = actualizarSimulacion;
             padding: 15px;
         }
         .container {
-            max-width: 1200px;
+            max-width: 1250px;
             margin: 0 auto;
             background: var(--card);
             border-radius: 12px;
@@ -805,41 +40,45 @@ window.onload = actualizarSimulacion;
 
         .grid {
             display: grid;
-            grid-template-columns: 350px 1fr;
+            grid-template-columns: 360px 1fr;
         }
-        @media (max-width: 850px) { .grid { grid-template-columns: 1fr; } }
+        @media (max-width: 900px) { .grid { grid-template-columns: 1fr; } }
 
         .sidebar {
             background: #f1f5f9;
             padding: 20px;
             border-right: 1px solid #cbd5e1;
+            max-height: 85vh;
+            overflow-y: auto;
         }
-        .sidebar h3 { color: #1e3a8a; margin-top: 0; font-size: 16px; border-bottom: 2px solid #2563eb; padding-bottom: 5px; }
+        .sidebar h3 { color: #1e3a8a; margin-top: 0; font-size: 15px; border-bottom: 2px solid #2563eb; padding-bottom: 5px; }
         
         .form-group { margin-bottom: 10px; }
         label { display: block; font-weight: 600; font-size: 11px; margin-bottom: 3px; color: #475569; }
-        input, select { width: 100%; padding: 6px 8px; border: 1px solid #cbd5e1; border-radius: 5px; font-size: 13px; box-sizing: border-box; }
+        input, select { width: 100%; padding: 6px 8px; border: 1px solid #cbd5e1; border-radius: 5px; font-size: 13px; box-sizing: border-box; background: white; }
         
         .btn {
             background: var(--accent);
             color: white;
             border: none;
             width: 100%;
-            padding: 10px;
+            padding: 12px;
             font-size: 14px;
             font-weight: bold;
             border-radius: 5px;
             cursor: pointer;
-            margin-top: 10px;
+            margin-top: 15px;
             transition: background 0.2s;
         }
         .btn:hover { background: #1d4ed8; }
 
         .main-content {
             padding: 20px;
+            max-height: 85vh;
+            overflow-y: auto;
         }
 
-        /* Simulador Gráfico Interactivo de Despliegue */
+        /* Simulador Animado 3D */
         .simulator-screen {
             background: #090d16;
             border-radius: 8px;
@@ -850,7 +89,7 @@ window.onload = actualizarSimulacion;
             margin-bottom: 20px;
         }
         .aorta-container {
-            height: 220px;
+            height: 200px;
             border: 2px dashed #334155;
             border-radius: 6px;
             position: relative;
@@ -861,40 +100,33 @@ window.onload = actualizarSimulacion;
             overflow: hidden;
         }
         
-        /* Estructura Animada de la Válvula */
         .valve-object {
             position: absolute;
-            width: 60px;
-            height: 90px;
+            width: 70px;
+            height: 100px;
             border: 3px solid #38bdf8;
-            border-radius: 10px;
-            background: rgba(56, 189, 248, 0.15);
+            border-radius: 12px;
+            background: rgba(56, 189, 248, 0.2);
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 10px;
+            font-size: 11px;
             font-weight: bold;
             color: #bae6fd;
-            transition: all 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            transform: scale(0.2);
+            transition: all 0.7s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            transform: scale(0.1);
             opacity: 0;
+            box-shadow: 0 0 15px rgba(56, 189, 248, 0.4);
         }
         .valve-object.deployed {
             transform: scale(1);
             opacity: 1;
-            box-shadow: 0 0 25px rgba(56, 189, 248, 0.6);
-        }
-
-        .calcium-nodule {
-            position: absolute;
-            background: #e2e8f0;
-            border-radius: 50%;
-            box-shadow: 0 0 8px #ffffff;
+            box-shadow: 0 0 30px rgba(56, 189, 248, 0.8);
         }
 
         .metrics-row {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
             gap: 10px;
             margin-bottom: 20px;
         }
@@ -911,14 +143,14 @@ window.onload = actualizarSimulacion;
         .alert-box {
             background: #eff6ff;
             border-left: 4px solid var(--accent);
-            padding: 10px;
+            padding: 12px;
             border-radius: 0 5px 5px 0;
-            font-size: 12px;
+            font-size: 13px;
             margin-top: 15px;
         }
 
         table { width: 100%; border-collapse: collapse; margin-top: 15px; font-size: 12px; }
-        th, td { border: 1px solid #cbd5e1; padding: 6px; text-align: left; }
+        th, td { border: 1px solid #cbd5e1; padding: 8px; text-align: left; }
         th { background: #1e3a8a; color: white; }
     </style>
 </head>
@@ -926,79 +158,75 @@ window.onload = actualizarSimulacion;
 
 <div class="container">
     <header>
-        <h1>Simulador Interactivo de Despliegue TAVI 3D</h1>
-        <p>Planificación y Simulación Dinámica - Caso: Enrique Vargas Calderón</p>
+        <h1>Simulador Interactivo de Implante TAVI 3D</h1>
+        <p>Análisis Anatómico, Accesos Bilaterales y Simulación Dinámica - Enrique Vargas Calderón</p>
     </header>
 
     <div class="grid">
-        <!-- Panel de Entradas Clínicas -->
+        <!-- Panel Lateral de Entradas -->
         <div class="sidebar">
             <h3>Biometría 3Mensio</h3>
             <div class="form-group">
                 <label>Área del Anillo (mm²):</label>
-                <input type="number" id="area" value="418.9" step="0.1">
+                <input type="number" id="in_area" value="418.9" step="0.1">
             </div>
             <div class="form-group">
                 <label>Perímetro del Anillo (mm):</label>
-                <input type="number" id="peri" value="73.2" step="0.1">
+                <input type="number" id="in_peri" value="73.2" step="0.1">
             </div>
             <div class="form-group">
                 <label>Diámetro Mín / Máx (mm):</label>
                 <div style="display:flex; gap:5px;">
-                    <input type="number" id="minD" value="21.4" step="0.1">
-                    <input type="number" id="maxD" value="25.7" step="0.1">
+                    <input type="number" id="in_mindiam" value="21.4" step="0.1">
+                    <input type="number" id="in_maxdiam" value="25.7" step="0.1">
                 </div>
             </div>
             <div class="form-group">
                 <label>Calcio Valvular Total (mm³):</label>
-                <input type="number" id="calc" value="1718">
+                <input type="number" id="in_calc" value="1718">
             </div>
             <div class="form-group">
                 <label>Alturas Coronarias (RCA / LCA) (mm):</label>
                 <div style="display:flex; gap:5px;">
-                    <input type="number" id="rca" value="15.4" step="0.1">
-                    <input type="number" id="lca" value="12.5" step="0.1">
+                    <input type="number" id="in_rca" value="15.4" step="0.1">
+                    <input type="number" id="in_lca" value="12.5" step="0.1">
                 </div>
             </div>
 
             <h3>Accesos Femorales Bilaterales</h3>
             <div class="form-group">
                 <label>Acceso Derecho Mínimo (mm):</label>
-                <input type="number" id="accDer" value="4.9" step="0.1">
+                <input type="number" id="in_acc_der" value="4.9" step="0.1">
             </div>
             <div class="form-group">
                 <label>Acceso Izquierdo Mínimo (mm):</label>
-                <input type="number" id="accIzq" value="5.6" step="0.1">
+                <input type="number" id="in_acc_izq" value="5.6" step="0.1">
             </div>
 
-            <h3>Selección de Válvula</h3>
+            <h3>Selección de Prótesis</h3>
             <div class="form-group">
-                <select id="valvula">
-                    <option value="Evolut 29">Medtronic Evolut PRO+ 29 mm (Autoexpandible)</option>
-                    <option value="Sapien 26">Edwards SAPIEN 3 Ultra 26 mm (Balón-expandible)</option>
-                    <option value="Navitor 27">Boston Scientific Navitor 27 mm (Autoexpandible)</option>
-                    <option value="Hydra 30">Hydra SMT 30 mm (Autoexpandible)</option>
-                    <option value="Myval 27.5">Meril Myval 27.5 mm Intermedio (Balón)</option>
+                <select id="sel_valvula">
+                    <option value="Medtronic Evolut PRO+ 29 mm">Medtronic Evolut PRO+ 29 mm (Autoexpandible)</option>
+                    <option value="Edwards SAPIEN 3 Ultra 26 mm">Edwards SAPIEN 3 Ultra 26 mm (Balón-expandible)</option>
+                    <option value="Boston Scientific Navitor 27 mm">Boston Scientific Navitor 27 mm (Autoexpandible)</option>
+                    <option value="Hydra SMT 30 mm">Hydra SMT 30 mm (Autoexpandible)</option>
+                    <option value="Meril Myval 27.5 mm">Meril Myval 27.5 mm Intermedio (Balón)</option>
                 </select>
             </div>
 
-            <button class="btn" onclick="ejecutarSimulacion()">▶ Simular Despliegue en Vivo</button>
+            <button class="btn" onclick="ejecutarSimulacionAnimada()">▶ Simular Despliegue en Vivo</button>
         </div>
 
-        <!-- Panel Visual y Resultados -->
+        <!-- Panel de Resultados y Animación -->
         <div class="main-content">
-            <h3 style="margin-top:0; color:#1e3a8a;">Animación Gráfica del Implante y Interacción con Calcio</h3>
+            <h3 style="margin-top:0; color:#1e3a8a;">Visor Gráfico de Despliegue e Interacción Valvular</h3>
             
             <div class="simulator-screen">
-                <div id="sim_status_title" style="font-size:12px; color:#38bdf8; font-weight:bold; margin-bottom:5px;">Estado: Listo para desplegar</div>
-                <div class="aorta-container" id="canvasBox">
-                    <!-- Nódulos de Calcio Simulados en el Anillo -->
-                    <div class="calcium-nodule" style="width:14px; height:14px; top:130px; left:110px;"></div>
-                    <div class="calcium-nodule" style="width:18px; height:18px; top:120px; right:120px;"></div>
-                    <div class="calcium-nodule" style="width:12px; height:12px; bottom:50px; left:45%;"></div>
-                    
-                    <!-- Prótesis Animada -->
-                    <div id="valveVisual" class="valve-object">PRÓTESIS</div>
+                <div id="sim_estado" style="font-size:12px; color:#38bdf8; font-weight:bold; margin-bottom:5px;">Estado: Listo para iniciar simulación</div>
+                <div class="aorta-container">
+                    <div style="position:absolute; top:10px; left:10px; font-size:10px; color:#64748b;">Anillo Aórtico Elíptico (418.9 mm²)</div>
+                    <!-- Prótesis con animación integrada -->
+                    <div id="valvulaAnimada" class="valve-object">PRÓTESIS</div>
                 </div>
             </div>
 
@@ -1006,36 +234,36 @@ window.onload = actualizarSimulacion;
             <div class="metrics-row">
                 <div class="metric-card">
                     <h4>Riesgo Vascular Bilateral</h4>
-                    <div class="val" id="r_vasc" style="color:var(--danger)">Calculando...</div>
+                    <div class="val" id="res_vasc">Calculando...</div>
                 </div>
                 <div class="metric-card">
                     <h4>Riesgo Stroke (Embólico)</h4>
-                    <div class="val" id="r_stroke" style="color:var(--warning)">Calculando...</div>
+                    <div class="val" id="res_stroke">Calculando...</div>
                 </div>
                 <div class="metric-card">
                     <h4>Riesgo Marcapasos (BAV)</h4>
-                    <div class="val" id="r_mp" style="color:var(--warning)">Calculando...</div>
+                    <div class="val" id="res_mp">Calculando...</div>
                 </div>
                 <div class="metric-card">
                     <h4>Riesgo Obs. Coronaria</h4>
-                    <div class="val" id="r_coro" style="color:var(--success)">Calculando...</div>
+                    <div class="val" id="res_coro">Calculando...</div>
                 </div>
             </div>
 
-            <div class="alert-box" id="alertBox">
-                <strong>Alerta Quirúrgica:</strong> Presione el botón de simulación para evaluar el comportamiento mecánico y anatómico.
+            <div class="alert-box" id="res_alerta">
+                <strong>Análisis Quirúrgico:</strong> Haga clic en el botón lateral para correr la simulación del implante.
             </div>
 
             <table>
                 <thead>
                     <tr>
-                        <th>Tecnología Evaluada</th>
-                        <th>Tamaño</th>
-                        <th>Oversizing Est.</th>
-                        <th>Comportamiento de Expansión</th>
+                        <th>Tecnología / Dispositivo</th>
+                        <th>Tipo</th>
+                        <th>Tamaño Sugerido</th>
+                        <th>Interacción con Calcio y Oversizing</th>
                     </tr>
                 </thead>
-                <tbody id="tablaRes">
+                <tbody id="tabla_matriz">
                     <!-- Dinámico -->
                 </tbody>
             </table>
@@ -1044,74 +272,105 @@ window.onload = actualizarSimulacion;
 </div>
 
 <script>
-function ejecutarSimulacion() {
-    const area = parseFloat(document.getElementById('area').value);
-    const peri = parseFloat(document.getElementById('peri').value);
-    const calc = parseFloat(document.getElementById('calc').value);
-    const rca = parseFloat(document.getElementById('rca').value);
-    const lca = parseFloat(document.getElementById('lca').value);
-    const accDer = parseFloat(document.getElementById('accDer').value);
-    const accIzq = parseFloat(document.getElementById('accIzq').value);
-    const valv = document.getElementById('valvula').value;
+function ejecutarSimulacionAnimada() {
+    const area = parseFloat(document.getElementById('in_area').value) || 0;
+    const peri = parseFloat(document.getElementById('in_peri').value) || 0;
+    const calc = parseFloat(document.getElementById('in_calc').value) || 0;
+    const rca = parseFloat(document.getElementById('in_rca').value) || 0;
+    const lca = parseFloat(document.getElementById('in_lca').value) || 0;
+    const accDer = parseFloat(document.getElementById('in_acc_der').value) || 0;
+    const accIzq = parseFloat(document.getElementById('in_acc_izq').value) || 0;
+    const valvSel = document.getElementById('sel_valvula').value;
 
-    // 1. Animación del Despliegue de la Válvula
-    const valveObj = document.getElementById('valveVisual');
-    const statusTitle = document.getElementById('sim_status_title');
+    // 1. Activar animación gráfica del implante
+    const objValvula = document.getElementById('valvulaAnimada');
+    const txtEstado = document.getElementById('sim_estado');
     
-    valveObj.classList.remove('deployed');
-    statusTitle.innerText = "Estado: Posicionando catéter de liberación...";
+    objValvula.classList.remove('deployed');
+    txtEstado.innerText = "Posicionando sistema de liberación sobre anillo...";
     
     setTimeout(() => {
-        valveObj.classList.add('deployed');
-        statusTitle.innerText = `Estado: Prótesis ${valv} Desplegada Exitosamente en Anillo`;
-    }, 400);
+        objValvula.classList.add('deployed');
+        txtEstado.innerText = `Prótesis [ ${valvSel} ] desplegada y expandida contra calcio (1718 mm³)`;
+    }, 500);
 
-    // 2. Cifras de Riesgo Cuantitativas
-    let riesgoV = "Bajo (<5%)";
-    let colorV = "#16a34a";
+    // 2. Calcular cifras de riesgo cuantitativas
     let minAcc = Math.min(accDer, accIzq);
-    if(minAcc < 5.5) {
-        riesgoV = "Alto (19.8% - Disección/Fuga)";
-        colorV = "#dc2626";
-    } else if(minAcc < 6.0) {
-        riesgoV = "Moderado (12.4%)";
-        colorV = "#d97706";
+    let rVascTxt = "Bajo (<5%)";
+    let rVascColor = "#16a34a";
+    if (minAcc < 5.5) {
+        rVascTxt = "Alto (19.8% - Disección/Fuga)";
+        rVascColor = "#dc2626";
+    } else if (minAcc < 6.0) {
+        rVascTxt = "Moderado (12.4%)";
+        rVascColor = "#d97706";
     }
-    document.getElementById('r_vasc').innerText = riesgoV;
-    document.getElementById('r_vasc').style.color = colorV;
+    document.getElementById('res_vasc').innerText = rVascTxt;
+    document.getElementById('res_vasc').style.color = rVascColor;
 
-    let riesgoS = calc > 1500 ? "Moderado-Alto (6.2%)" : "Bajo (3.1%)";
-    document.getElementById('r_stroke').innerText = riesgoS;
+    let rStrokeTxt = calc > 1500 ? "Moderado-Alto (6.2%)" : "Bajo (3.1%)";
+    document.getElementById('res_stroke').innerText = rStrokeTxt;
+    document.getElementById('res_stroke').style.color = calc > 1500 ? "#d97706" : "#16a34a";
 
-    let riesgoMP = "Moderado-Alto (24.5%)";
-    document.getElementById('r_mp').innerText = riesgoMP;
+    document.getElementById('res_mp').innerText = "Moderado-Alto (24.5%)";
+    document.getElementById('res_mp').style.color = "#d97706";
 
-    let riesgoC = (rca < 10 || lca < 10) ? "Alto (>20%)" : "Bajo (<4%)";
-    document.getElementById('r_coro').innerText = riesgoC;
-    document.getElementById('r_coro').style.color = (rca < 10 || lca < 10) ? "#dc2626" : "#16a34a";
+    let rCoroTxt = (rca < 10 || lca < 10) ? "Alto (>20%)" : "Bajo (<4%)";
+    document.getElementById('res_coro').innerText = rCoroTxt;
+    document.getElementById('res_coro').style.color = (rca < 10 || lca < 10) ? "#dc2626" : "#16a34a";
 
-    // 3. Alertas de Accesos Bilaterales y Anatomía
-    let alertText = document.getElementById('alertBox');
-    if(minAcc < 5.5) {
-        alertText.innerHTML = `<strong>⚠️ ALCRÍTICA VASCULAR BILATERAL:</strong> Lumen mínimo de ${minAcc} mm (Derecho: ${accDer}mm, Izquierdo: ${accIzq}mm) con calcio severo. <strong>Indicación estricta de Litotricia Intravascular (IVL / Shockwave)</strong> o abordaje alternativo.`;
-        alertText.style.borderLeftColor = "#dc2626";
+    // 3. Alertas sobre accesos bilaterales y coronarias
+    let alertaBox = document.getElementById('res_alerta');
+    if (minAcc < 5.5) {
+        alertaBox.innerHTML = `<strong>⚠️ ALERTA CRÍTICA VASCULAR BILATERAL:</strong> Lumen iliofemoral mínimo de ${minAcc} mm (Derecho: ${accDer}mm, Izquierdo: ${accIzq}mm) con calcio severo. <strong>Uso indispensable de Litotricia Intravascular (IVL / Shockwave)</strong> o abordaje alternativo. Alturas coronarias seguras (RCA: ${rca}mm, LCA: ${lca}mm).`;
+        alertaBox.style.borderLeftColor = "#dc2626";
     } else {
-        alertText.innerHTML = `<strong>✅ ACCESOS ACEPTABLES:</strong> Diámetros suficientes para introductores de perfil bajo con precaución por placa ateromatosa. Alturas coronarias seguras (RCA: ${rca}mm, LCA: ${lca}mm).`;
-        alertText.style.borderLeftColor = "#2563eb";
+        alertaBox.innerHTML = `<strong>✅ ACCESOS FAVORABLES:</strong> Diámetros mínimos de seguridad superados (Der: ${accDer}mm, Izq: ${accIzq}mm). Se aconseja precaución por placa y uso de introductores de perfil bajo.`;
+        alertaBox.style.borderLeftColor = "#2563eb";
     }
 
-    // 4. Tabla de Resultados
-    document.getElementById('tablaRes').innerHTML = `
+    // 4. Matriz de dimensionamiento de válvulas
+    let evolutSize = peri > 78 ? "34 mm" : (peri > 73 ? "29 mm" : "26 mm");
+    let sapienSize = area > 430 ? "29 mm" : "26 mm";
+    let navitorSize = peri > 76 ? "31 mm" : (peri > 72 ? "27 mm" : "25 mm");
+    let hydraSize = peri > 75 ? "30 mm" : "26 mm";
+    let myvalSize = peri > 74 ? "29 mm" : (peri > 71 ? "27.5 mm (Intermedio)" : "26 mm");
+
+    document.getElementById('tabla_matriz').innerHTML = `
         <tr>
-            <td><strong>${valv}</strong></td>
-            <td>Seleccionada</td>
-            <td>~16-18%</td>
-            <td>Expansión completa interactuando con los 1718 mm³ de carga cálcica.</td>
+            <td><strong>Medtronic Evolut (PRO+/FX)</strong></td>
+            <td>Autoexpandible</td>
+            <td><strong>${evolutSize}</strong></td>
+            <td>Oversizing ~18% en perímetro. Soporte supra-anular excelente para el área de ${area} mm².</td>
+        </tr>
+        <tr>
+            <td><strong>Edwards SAPIEN 3 / Ultra</strong></td>
+            <td>Balón-expandible</td>
+            <td><strong>${sapienSize}</strong></td>
+            <td>Oversizing ~14% en área. Ajuste milimétrico a nivel anular.</td>
+        </tr>
+        <tr>
+            <td><strong>Boston Scientific Navitor</strong></td>
+            <td>Autoexpandible</td>
+            <td><strong>${navitorSize}</strong></td>
+            <td>Oversizing ~15% en perímetro. Faldón activo para minimizar TR/fuga paravalvular.</td>
+        </tr>
+        <tr>
+            <td><strong>Hydra (SMT)</strong></td>
+            <td>Autoexpandible</td>
+            <td><strong>${hydraSize}</strong></td>
+            <td>Oversizing ~22% en perímetro. Perfil adaptativo para anatomías con alta carga cálcica.</td>
+        </tr>
+        <tr>
+            <td><strong>Meril Myval</strong></td>
+            <td>Balón-expandible</td>
+            <td><strong>${myvalSize}</strong></td>
+            <td>Oversizing ~16% en área. Ventaja de tallas intermedias para evitar sobredimensionamiento.</td>
         </tr>
     `;
 }
 
-window.onload = ejecutarSimulacion;
+window.onload = ejecutarSimulacionAnimada;
 </script>
 
 </body>
