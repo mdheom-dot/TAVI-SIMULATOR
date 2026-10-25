@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simulador Clínico TAVI Pro - Interactivo</title>
+    <style>
+        :root {
+            --primary: #1e3a8a;
+            --secondary: #3b82f6;
+            --accent: #10b981;
+            --bg: #f8fafc;
+            --card-bg: #ffffff;
+            --text: #1e293b;
+            --border: #cbd5e1;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg);
+            color: var(--text);
+            margin: 0;
+            padding: 20px;
+            line-height: 1.4;
+        }
+        .app-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: var(--card-bg);
+            border-radius: 12px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+            overflow: hidden;
+        }
+        header {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            padding: 25px;
+            text-align: center;
+        }
+        header h1 { margin: 0; font-size: 26px; }
+        header p { margin: 5px 0 0 0; opacity: 0.9; font-size: 14px; }
+        
+        .main-grid {
+            display: grid;
+            grid-template-columns: 380px 1fr;
+            gap: 0;
+        }
+        @media (max-width: 900px) {
+            .main-grid { grid-template-columns: 1fr; }
+        }
+        
+        .sidebar-inputs {
+            background: #f1f5f9;
+            padding: 20px;
+            border-right: 1px solid var(--border);
+        }
+        .sidebar-inputs h3 { color: var(--primary); margin-top: 0; font-size: 18px; border-bottom: 2px solid var(--secondary); padding-bottom: 8px; }
+        
+        .form-group {
+            margin-bottom: 14px;
+        }
+        label {
+            display: block;
+            font-weight: 600;
+            font-size: 13px;
+            margin-bottom: 5px;
+            color: #334155;
+        }
+        input, select {
+            width: 100%;
+            padding: 8px 10px;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            font-size: 14px;
+            box-sizing: border-box;
+            background: white;
+        }
+        input:focus, select:focus {
+            border-color: var(--secondary);
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
+        }
+        
+        .btn-run {
+            background: var(--accent);
+            color: white;
+            border: none;
+            width: 100%;
+            padding: 12px;
+            font-size: 15px;
+            font-weight: bold;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: background 0.2s;
+            margin-top: 10px;
+        }
+        .btn-run:hover { background: #059669; }
+
+        .content-display {
+            padding: 25px;
+        }
+        
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+        .metric-card {
+            background: #f8fafc;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 15px;
+            text-align: center;
+        }
+        .metric-card h4 { margin: 0 0 5px 0; font-size: 12px; color: #64748b; text-transform: uppercase; }
+        .metric-card .value { font-size: 20px; font-weight: bold; color: var(--primary); }
+
+        h3.section-title { color: var(--primary); font-size: 18px; margin-top: 0; border-bottom: 1px solid var(--border); padding-bottom: 8px; }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+            font-size: 14px;
+        }
+        th, td {
+            border: 1px solid var(--border);
+            padding: 10px;
+            text-align: left;
+        }
+        th {
+            background: var(--primary);
+            color: white;
+        }
+        tr:nth-child(even) { background: #f8fafc; }
+        
+        .badge {
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: bold;
+            color: white;
+            display: inline-block;
+        }
+        .badge-auto { background: #2563eb; }
+        .badge-balloon { background: #16a34a; }
+
+        .alert-box {
+            background: #eff6ff;
+            border-left: 4px solid var(--secondary);
+            padding: 12px;
+            border-radius: 0 6px 6px 0;
+            margin-top: 20px;
+            font-size: 13px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="app-container">
+    <header>
+        <h1>Simulador Clínico TAVI Pro 3D</h1>
+        <p>Herramienta interactiva para planificación intervencionista basada en biometría 3Mensio</p>
+    </header>
+
+    <div class="main-grid">
+        <!-- Panel de Entradas (Inputs Interactivos) -->
+        <div class="sidebar-inputs">
+            <h3>Parámetros 3Mensio</h3>
+            
+            <div class="form-group">
+                <label>Área del Anillo (mm²):</label>
+                <input type="number" id="in_area" value="418.9" step="0.1">
+            </div>
+
+            <div class="form-group">
+                <label>Perímetro del Anillo (mm):</label>
+                <input type="number" id="in_peri" value="73.2" step="0.1">
+            </div>
+
+            <div class="form-group">
+                <label>Diámetro Mínimo / Máximo (mm):</label>
+                <div style="display: flex; gap: 8px;">
+                    <input type="number" id="in_mindiam" value="21.4" step="0.1">
+                    <input type="number" id="in_maxdiam" value="25.7" step="0.1">
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>Carga de Calcio Valvular:</label>
+                <select id="in_calc">
+                    <option value="Severo" selected>Severo (>1500 mm³)</option>
+                    <option value="Moderado">Moderado</option>
+                    <option value="Leve">Leve</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label>Altura Coronaria Mínima (mm):</label>
+                <input type="number" id="in_coronary" value="12.5" step="0.1">
+            </div>
+
+            <div class="form-group">
+                <label>Diámetro Mínimo Femoral/Ilíaco (mm):</label>
+                <input type="number" id="in_access" value="5.6" step="0.1">
+            </div>
+
+            <button class="btn-run" onclick="actualizarSimulacion()">Simular e Instanciar Válvulas</button>
+        </div>
+
+        <!-- Panel de Resultados y Visualización -->
+        <div class="content-display">
+            <h3 class="section-title">Análisis Biométrico y Riesgos Derivados</h3>
+            
+            <div class="metrics-grid">
+                <div class="metric-card">
+                    <h4>Excentricidad</h4>
+                    <div class="value" id="out_excent">0.17</div>
+                </div>
+                <div class="metric-card">
+                    <h4>Predilatación</h4>
+                    <div class="value" id="out_predil" style="color: #dc2626;">Obligatoria (Sí)</div>
+                </div>
+                <div class="metric-card">
+                    <h4>Riesgo Marcapasos</h4>
+                    <div class="value" id="out_pacemaker" style="color: #d97706;">Moderado - Alto</div>
+                </div>
+                <div class="metric-card">
+                    <h4>Riesgo Coronario</h4>
+                    <div class="value" id="out_coronary_risk" style="color: #16a34a;">Bajo</div>
+                </div>
+            </div>
+
+            <h3 class="section-title">Matriz de Selección de Prótesis (Mercado Global)</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Tecnología / Prótesis</th>
+                        <th>Tipo</th>
+                        <th>Tamaño Sugerido</th>
+                        <th>Oversizing Est.</th>
+                        <th>Observaciones Técnicas</th>
+                    </tr>
+                </thead>
+                <tbody id="tabla_resultados">
+                    <!-- Rellenado dinámicamente por JS -->
+                </tbody>
+            </table>
+
+            <div class="alert-box" id="alert_text">
+                <strong>Nota de Acceso Vascular:</strong> El diámetro de acceso mínimo evaluado (< 6.0 mm) con calcificación severa iliofemoral requiere extrema precaución, uso de sistemas de bajo perfil o predilatación vascular (IVL).
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function actualizarSimulacion() {
+    const area = parseFloat(document.getElementById('in_area').value);
+    const peri = parseFloat(document.getElementById('in_peri').value);
+    const minD = parseFloat(document.getElementById('in_mindiam').value);
+    const maxD = parseFloat(document.getElementById('in_maxdiam').value);
+    const calc = document.getElementById('in_calc').value;
+    const coro = parseFloat(document.getElementById('in_coronary').value);
+    const acc = parseFloat(document.getElementById('in_access').value);
+
+    // Cálculos dinámicos simples para excentricidad
+    const excent = ((maxD - minD) / maxD).toFixed(2);
+    document.getElementById('out_excent').innerText = excent;
+
+    // Lógica dinámica de dimensionamiento basada en perímetro y área
+    let evolutSize = peri > 78 ? "34 mm" : (peri > 73 ? "29 mm" : "26 mm");
+    let sapienSize = area > 430 ? "29 mm" : "26 mm";
+    let navitorSize = peri > 76 ? "31 mm" : (peri > 72 ? "27 mm" : "25 mm");
+    let hydraSize = peri > 75 ? "30 mm" : "26 mm";
+    let myvalSize = peri > 74 ? "29 mm" : (peri > 71 ? "27.5 mm (Intermedio)" : "26 mm");
+
+    let htmlRows = `
+        <tr>
+            <td><strong>Medtronic Evolut (PRO+/FX)</strong></td>
+            <td><span class="badge badge-auto">Autoexpandible</span></td>
+            <td><strong>${evolutSize}</strong></td>
+            <td>~18% en perímetro</td>
+            <td>Diseño supra-anular. Excelente área efectiva.</td>
+        </tr>
+        <tr>
+            <td><strong>Edwards SAPIEN 3 / Ultra</strong></td>
+            <td><span class="badge badge-balloon">Balón-expandible</span></td>
+            <td><strong>${sapienSize}</strong></td>
+            <td>~14% en área</td>
+            <td>Ajuste exacto. Vigilar perfil de introductores 14Fr-16Fr.</td>
+        </tr>
+        <tr>
+            <td><strong>Boston Scientific Navitor</strong></td>
+            <td><span class="badge badge-auto">Autoexpandible</span></td>
+            <td><strong>${navitorSize}</strong></td>
+            <td>~15% en perímetro</td>
+            <td>Faldón activo contra fugas paravalvulares.</td>
+        </tr>
+        <tr>
+            <td><strong>Hydra (SMT)</strong></td>
+            <td><span class="badge badge-auto">Autoexpandible</span></td>
+            <td><strong>${hydraSize}</strong></td>
+            <td>~22% en perímetro</td>
+            <td>Perfil bajo con celdas adaptativas de tres zonas.</td>
+        </tr>
+        <tr>
+            <td><strong>Myval (Meril Life Sciences)</strong></td>
+            <td><span class="badge badge-balloon">Balón-expandible</span></td>
+            <td><strong>${myvalSize}</strong></td>
+            <td>~16% en área</td>
+            <td>Ventaja de tallaje intermedio para control de expansión.</td>
+        </tr>
+    `;
+
+    document.getElementById('tabla_resultados').innerHTML = htmlRows;
+    
+    // Alerta interactiva de acceso
+    if(acc < 6.0) {
+        document.getElementById('alert_text').innerHTML = `<strong>⚠️ Alerta de Acceso Vascular:</strong> Con un diámetro de ${acc} mm y calcificación iliofemoral, existe alto riesgo vascular. Considere litotricia intravascular (IVL) o vía alternativa.`;
+    } else {
+        document.getElementById('alert_text').innerHTML = `<strong>✅ Acceso Favorable:</strong> Diámetro luminal adecuado para el paso de introductores estándar con precaución por placa.`;
+    }
+}
+
+// Ejecutar al cargar la página
+window.onload = actualizarSimulacion;
+</script>
+
+</body>
+</html>
